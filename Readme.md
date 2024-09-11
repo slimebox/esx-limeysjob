@@ -14,7 +14,7 @@ ox-target - https://github.com/overextended/ox-target
 ox-lib - https://github.com/overextended/ox-lib
 
 ## Insert into ox-inventory/data/items.lua 
-	
+```
 	--drinks
     ['limeysdonut'] 				 	 = {['name'] = 'limeysdonut', 			  	  	['label'] = 'Strawberry Donut', 				['weight'] = 200, 		['type'] = 'item', 		['image'] = 'limeysdonut2.png', 			['unique'] = false, 	['useable'] = true, 	['shouldClose'] = true,	   ['combinable'] = nil,   ['description'] = 'Strawberry Donut!'},
     ['limeysdonut2'] 				 	 = {['name'] = 'limeysdonut2', 			  	  	['label'] = 'Chocolate Donut', 				['weight'] = 200, 		['type'] = 'item', 		['image'] = 'limeysdonut2.png', 			['unique'] = false, 	['useable'] = true, 	['shouldClose'] = true,	   ['combinable'] = nil,   ['description'] = 'Chocolate Donut!'},
@@ -44,18 +44,15 @@ ox-lib - https://github.com/overextended/ox-lib
 	['whiskey'] 		    	 = {['name'] = 'whiskey', 			   	['label'] = 'Whiskey',               	['weight'] = 1000, 		['type'] = 'item', 		['image'] = 'whiskey.png', 	    ['unique'] = false, 	['useable'] = true, 	['shouldClose'] = true,	   ['combinable'] = nil,   ['description'] = 'This is not a bottle of booze!'},
 	['watermelonslice'] 		    	 = {['name'] = 'watermelonslice', 			   	['label'] = 'Watermelon Slice',               	['weight'] = 200, 		['type'] = 'item', 		['image'] = 'watermelonslice.png', 	    ['unique'] = false, 	['useable'] = true, 	['shouldClose'] = true,	   ['combinable'] = nil,   ['description'] = 'an ingredient!'},
 
-}
-
 ```
-
 ## Insert Contents of @limeysjob/Images into @ox-inventory/web/images
 
 ## Job Database
 TODO: Write a SQL file for import
 
-For now, add an entry to the jobs table with the values ('limeys', 'Limey\'s Juice Bar', 0) and four entries into job_grades:
-(<id>, 'limeys', 0, 'trainee', 'Trainee', 150, '{}', '{}'),
-(<id>, 'limeys', 1, 'worker', 'Worker', 300, '{}', '{}'),
-(<id>, 'limeys', 2, 'manager', 'Manager', 500, '{}', '{}'),
-(<id>, 'limeys', 3, 'owner', 'Owner', 800, '{}', '{}')
+For now, add an entry to the jobs table with the values ('limeys', 'Limey\'s Juice Bar', 0) and four entries into job_grades:  
+(\<id\>, 'limeys', 0, 'trainee', 'Trainee', 150, '{}', '{}'),  
+(\<id\>, 'limeys', 1, 'worker', 'Worker', 300, '{}', '{}'),  
+(\<id\>, 'limeys', 2, 'manager', 'Manager', 500, '{}', '{}'),  
+(\<id\>, 'limeys', 3, 'owner', 'Owner', 800, '{}', '{}')
 
