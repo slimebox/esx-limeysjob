@@ -3,7 +3,6 @@ local ESX = exports['es_extended']:getSharedObject()
 isLoggedIn = false
 PlayerJob = {}
 
-local onDuty = false
 
 Citizen.CreateThread(function()
 	exports['qb-target']:AddBoxZone("LimeysDuty", vector3(252.78, -1018.57, 29.46), 0.25, 0.3, {
@@ -232,319 +231,127 @@ end)
 
 -- QB-MENU --
 
+lib.registerMenu({
+    id = 'LimeysMenu',
+    title = '| Limeys Menu |',
+    options = {
+        { label = '• Drinks', description = 'A lovely cocktail awaits' },
+    }
+}, function(selected, scroll, args)
+    if selected == 1 then
+        lib.showMenu('LimeysDrinks')
+    end
+end)
+
 RegisterNetEvent('qb-menu:ViewLimeysMenu', function(data)
-    exports['qb-menu']:openMenu({
-        {
-            
-            header = "| Limeys Menu |",
-            isMenuHeader = true, 
-        },
-        {
-            
-            header = "• Drinks",
-            txt = "A lovely cocktail awaits",
-            params = {
-                event = "qb-menu:ViewLimeysDrinks"
-            }
-        },
-        {
-            id = 7,
-            header = "Close (ESC)",
-            isMenuHeader = true,
-        },
-    })
+    lib.showMenu("ViewLimeysMenu")
 end)
 
-RegisterNetEvent('qb-menu:ViewLimeysDrinks', function(data)
-    exports['qb-menu']:openMenu({
-        {
-            
-            header = "| Drinks Menu |",
-            isMenuHeader = true, 
-        },
-        {
-            
-            header = "• Cherry Cocktail",
-            txt = "a lovely cocktail.",
-            isMenuHeader = true,
-        },
-        {
-            
-            header = "• Apple Cocktail",
-            txt = "Rumor has it that Issac Newton\'s apple made this.",
-            isMenuHeader = true,
-        },  
-        {
-            
-            header = "• Banana Cocktail",
-            txt = "Brought by the minions",
-            isMenuHeader = true,
-        },
-        {
-            
-            header = "• Cherry Drink",
-            txt = "Cherries!",
-            isMenuHeader = true,
-        },
-        {
-            
-            header = "• Kiwi Cocktail",
-            txt = "Enjoyed by most!",
-           isMenuHeader = true,
-        },
-        {
-            
-            header = "• Lemon Drink",
-            txt = "We all know it\'s lemonade",
-            isMenuHeader = true,
-        },
-        {
-            
-            header = "• Lime Drink",
-            txt = "limes.",
-            isMenuHeader = true,
-        },
-        {
-            
-            header = "• Orange Drink",
-            txt = "Fancy orange juice indubitably.",
-            isMenuHeader = true,
-        },
-        {
-            
-            header = "• Paradise Cocktail",
-            txt = "Livin\' a Paradise",
-            isMenuHeader = true,
-        },
-        {
-            
-            header = "• Watermelon Drink",
-            txt = "Facy Treat!",
-            isMenuHeader = true,
-        },
+DrinksMenuOptions = {
+    { label = "• Cherry Cocktail", description = "A lovely cocktail." },
+    { label = "• Apple Cocktail", description = "Rumor has it that Sir Isaac Newton's apple made this."},
+    { label = "• Banana Cocktail", description = "Brought to you by the minions."},
+    { label = "• Kiwi Cocktail", description = "Enjoyed by most!"},
+    { label = "• Paradise Cocktail", description = "Livin' the paradise."},
+    { label = "• Cherry Drink", description = "Cherries! Non-alcoholic." },
+    { label = "• Lemon Drink", description = "We all know it's lemonade. Non-alcoholic!"},
+    { label = "• Lime Drink", description = "Limes. Non-alcoholic!"},
+    { label = "• Orange Drink", description = "Fancy orange juice. Indubitably. Non-alcoholic!"},
+    { label = "• Watermelon Drink", description = "Fancy treat."},
+    { label = "Back"}
+}
 
-        {
-            id = 7,
-            header = "Back",
-            params = {
-                event = "qb-menu:ViewLimeysMenu"
-            }
-        },
-    })
+MenuEvents = { "qb-limeysjob:CherryCocktail", "qb-limeysjob:AppleCocktail", "qb-limeysjob:BananaCocktail", "qb-limeysjob:KiwiCocktail", "qb-limeysjob:ParadiseCocktail", "qb-limeysjob:CherryDrink", "qb-limeysjob:LemonDrink", "qb-limeysjob:LimeDrink", "qb-limeysjob:OrangeDrink", "qb-limeysjob:WatermelonDrink"}
+
+
+lib.registerMenu({
+    id = "ViewLimeysDrinks",
+    title = "| Drinks Menu |",
+    options = DrinksMenuOptions
+}, function(selected, scroll, args)
+    if selected == 11 then
+        lib.showMenu("LimeysMenu")
 end)
 
-
-RegisterNetEvent('qb-menu:LimeysDrinkMenu', function(data)
-    exports['qb-menu']:openMenu({
-        {
-            
-            header = "| Drinks Menu |",
-            isMenuHeader = true, 
-        },
-        {
-            
-            header = "• Cherry Cocktail",
-            txt = "a lovely cocktail.",
-            params = {
-                event = "qb-limeysjob:CherryCocktail"
-            }
-        },
-        {
-            
-            header = "• Apple Cocktail",
-            txt = "Rumor has it that Issac Newton\'s apple made this.",
-            params = {
-                event = "qb-limeysjob:AppleCocktail"
-            }
-        },  
-        {
-            
-            header = "• Banana Cocktail",
-            txt = "Brought by the minions.",
-            params = {
-                event = "qb-limeysjob:BananaCocktail"
-            }
-        },
-        {
-            
-            header = "• Cherry Drink",
-            txt = "Cherries!",
-            params = {
-                event = "qb-limeysjob:CherryDrink"
-            }
-        },
-        {
-            
-            header = "• Kiwi Cocktail",
-            txt = "Enjoyed by most!",
-            params = {
-                event = "qb-limeysjob:KiwiCocktail"
-            }
-        },
-        {
-            
-            header = "• Lemon Drink",
-            txt = "We all know it\'s lemonade",
-            params = {
-                event = "qb-limeysjob:LemonDrink"
-            }
-        },
-        {
-            
-            header = "• Lime Drink",
-            txt = "limes.",
-            params = {
-                event = "qb-limeysjob:LimeDrink"
-            }
-        },
-        {
-            
-            header = "• Orange Drink",
-            txt = "Fancy orange juice indubitably.",
-            params = {
-                event = "qb-limeysjob:OrangeDrink"
-            }
-        },
-        {
-            
-            header = "• Paradise Cocktail",
-            txt = "Livin\' a Paradise!",
-            params = {
-                event = "qb-limeysjob:ParadiseCocktail"
-            }
-        },
-        {
-            
-            header = "• Watermelon Drink",
-            txt = "Fancy Treat!",
-            params = {
-                event = "qb-limeysjob:WatermelonDrink"
-            }
-        },
-
-        {
-            id = 7,
-            header = "Close (ESC)",
-            isMenuHeader = true,
-        },
-    })
+lib.registerMenu({
+    id = "LimeysDrinks",
+    title = "| Drinks Menu |",
+    options = DrinksMenuOptions
+}, function(selected, scroll, args)
+    if selected = 11 then 
+        lib.showMenu("LimeysMenu")
+    else
+        TriggerEvent(MenuEvents[selected])
+    end
 end)
 
+lib.registerMenu({
+    id = "LimeysStorage",
+    title = "| Limeys Storage |",
+    options {
+        { label = "• Left Cabinet" },
+        { label = "• Middle Cabinet" },
+        { label = "• Right Cabinet" }
+    }
+}, function(selected, scroll, args)
+    if selected == 1 then
+        TriggerEvent("qb-limeysjob:Cabinet1")
+    elseif selected == 2 then
+        TriggerEvent("qb-limeysjob:Cabinet2")
+    else
+        TriggerEvent("qb-limeysjob:Cabinet3")
+    end
+end)
 
 RegisterNetEvent('qb-menu:LimeysStorage', function(data)
-    exports['qb-menu']:openMenu({
-        {
-            
-            header = "| Limeys Storage |",
-            isMenuHeader = true, 
-        },
-        {
-            
-            header = "• Cabinet 1",
-            txt = "Access First Cabinet",
-            params = {
-                event = "qb-limeysjob:Cabinet1"
-            }
-        },
-        {
-            
-            header = "• Cabinet 2",
-            txt = "Access Middle Cabinet",
-            params = {
-                event = "qb-limeysjob:Cabinet2"
-            }
-        },
-        {
-            
-            header = "• Cabinet 3",
-            txt = "Access Last Cabinet",
-            params = {
-                event = "qb-limeysjob:Cabinet3"
-            }
-        },  
-        {
-            id = 7,
-            header = "Close (ESC)",
-            isMenuHeader = true, 
-        },
-    })
+    lib.showMenu("LimeysStorage")
+end)
+
+lib.registerMenu({
+    id = "DonutShop",
+    title = "| Donut Rack |",
+    options = {
+        { label = "• Get Donuts"}
+    }
+}, function(selected, scroll, args)
+    if selected == 1 then TriggerEvent("qb-limeysjob:donutshop") end``
 end)
 
 RegisterNetEvent('qb-menu:DonutShop', function(data)
-    exports['qb-menu']:openMenu({
-        {
-            
-            header = "| Donut Stock |",
-            isMenuHeader = true, 
-        },
-        {
-            
-            header = "• Get Donuts",
-            txt = "Get some yummy donuts to sell!",
-            params = {
-                event = "qb-limeysjob:donutshop"
-            }
-        },
-        {
-            
-            header = "Close (ESC)",
-            isMenuHeader = true, 
-        },
-    })
+    lib.showMenu("DonutShop")
+end)
+
+lib.registerMenu({
+    id = "CandyShop",
+    title = "| Candy Rack |",
+    options = {
+        { label = "• Get Candy" }
+    }
+}, function(selected, scroll, args)
+    if selected == 1 then TriggerEvent("qb-limeysjob:candyshop") end
 end)
 
 RegisterNetEvent('qb-menu:CandyShop', function(data)
-    exports['qb-menu']:openMenu({
-        {
-            
-            header = "| Candy Stock |",
-            isMenuHeader = true, 
-        },
-        {
-            
-            header = "• Get Candy",
-            txt = "Get some candy to sell!",
-            params = {
-                event = "qb-limeysjob:candyshop"
-            }
-        },
-        {
-            
-            header = "Close (ESC)",
-            isMenuHeader = true, 
-        },
-    })
+    lib.showMenu("CandyShop")
+end)
+
+
+lib.registerMenu({
+    id = "LimeysManager", 
+    title = "| Manager's Laptop | ",
+    options = {
+        { label = "• Order Ingredients", description = "Place an order for ingredients."},
+        { label = "• Manage Business", description = "Manage the business and its' workers."}
+    }
+}, function(selected, scroll, args)
+    if selected == 1 then 
+        TriggerEvent("qb-limeysjob:shop")
+    else
+        TriggerEvent('esx_society:openBossMenu', "limeys", function(data, menu) end, { wash = false })
 end)
 
 RegisterNetEvent('qb-menu:LimeysManagerPC', function(data)
-    exports['qb-menu']:openMenu({
-        {
-            
-            header = "| The Manager\'s Laptop |",
-            isMenuHeader = true, 
-        },
-        {
-            
-            header = "• Order Ingredients",
-            txt = "Place an Order for Ingredients",
-            params = {
-                event = "qb-limeysjob:shop"
-            }
-        },
-        {
-           
-            header = "• Manage Business",
-            txt = "Manage Limey\'s",
-            params = {
-                event = "qb-bossmenu:client:OpenMenu"
-            }
-        },
-        {
-            
-            header = "Close (ESC)",
-            isMenuHeader = true, 
-        },
-    })
+    lib.showMenu("LimeysManager")
 end)
 
 RegisterNetEvent("qb-limeysjob:LimeysAlarm", function()
@@ -555,29 +362,27 @@ end)
 -- Till Stuff --
 RegisterNetEvent("qb-limeysjob:bill")
 AddEventHandler("qb-limeysjob:bill", function()
-    local bill = exports['qb-input']:ShowInput({
-        header = "Create Receipt",
-		submitText = "Charge",
-        inputs = {
-            {
-                text = "Server ID(#)",
-				name = "citizenid", -- name of the input should be unique otherwise it might override
-                type = "text", -- type of the input
-                isRequired = true -- Optional [accepted values: true | false] but will submit the form if no value is inputted
-            },
-            {
-                text = "Bill Price ($)", -- text you want to be displayed as a place holder
-                name = "billprice", -- name of the input should be unique otherwise it might override
-                type = "number", -- type of the input - number will not allow non-number characters in the field so only accepts 0-9
-                isRequired = false -- Optional [accepted values: true | false] but will submit the form if no value is inputted
-            }
-			
+
+    local input = lib.inputDialog("Create Invoice", {
+        { 
+            type = "number", 
+            label = "Player ID (#)",
+            description = "The numerical ID of the player you want to bill. You may need to ask them for this.",
+            required = true 
+        },
+        {
+            type = "number",
+            label = "Price to Bill",
+            description = "The amount of money to charge the other player.",
+            required = true
         }
     })
-    if bill ~= nil then
-        if bill.citizenid == nil or bill.billprice == nil then 
-            return 
-        end
-        TriggerServerEvent("qb-limeysjob:bill:player", bill.citizenid, bill.billprice)
+
+    if not input then return end
+
+    if input[1] == nil or input[2] == nil then 
+        return 
     end
+    
+    TriggerServerEvent("qb-limeysjob:bill:player", input[1], input[2])
 end)

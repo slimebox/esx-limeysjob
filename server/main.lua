@@ -8,6 +8,44 @@ end)
 
 ----DRINKS------------------------------------------------
 
+cocktailItems = { "cherrycocktail", "applecocktail", "bananacocktail", "kiwicocktail", "paradisecocktail"}
+drinkItems = { "cherrydrink", "watermelondrink", "lemondrink", "limedrink", "orangedrink"}
+foodItems = { "limeysgum", "limeyschocolate", "limeyschocolate2", "limeysdonut", "limeysdonut2"}
+
+for k in pairs(cocktailItems) do
+    ESX.RegisterUsableItem(k, function(source)
+        local xPlayer = ESX.GetPlayerFromId(source)
+        xPlayer.removeInventoryItem(k, 1)
+        TriggerClientEvent('esx_status:add', source, 'thirst', 220000)
+        TriggerClientEvent('esx_status:add', source, 'drunk', 220000)
+        TriggerClientEvent('esx_basicneeds:onDrink', source)
+        TriggerClientEvent('esx:showNotification', source, _U('used_drink'))
+    end)
+end
+
+
+for k in pairs(drinkItems) do
+    ESX.RegisterUsableItem(k, function(source)
+        local xPlayer = ESX.GetPlayerFromId(source)
+        xPlayer.removeInventoryItem(k, 1)
+        TriggerClientEvent('esx_status:add', source, 'thirst', 220000)
+        TriggerClientEvent('esx_basicneeds:onDrink', source)
+        TriggerClientEvent('esx:showNotification', source, _U('used_drink'))
+    end)
+end
+
+
+for k in pairs(strongFoodItems) do
+    ESX.RegisterUsableItem(k, function(source)
+        local xPlayer = ESX.GetPlayerFromId(source)
+        xPlayer.removeInventoryItem(k, 1)
+        TriggerClientEvent('esx_status:add', source, 'hunger', 220000)
+        TriggerClientEvent('esx_basicneeds:onDrink', source)
+        TriggerClientEvent('esx:showNotification', source, _U('used_food'))
+    end)
+end
+
+
 
 ESX.RegisterServerCallback('qb-limeysjob:server:get:ingredientcherrydrink', function(source, cb)
     local src = source
