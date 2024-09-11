@@ -1,172 +1,19 @@
 
-
-Discord - https://discord.gg/AS7U5GK4TE
-
-# This is a job for the Limeys MLO
+# This is a job for the Limeys MLO, converted to use ESX.
 > (https://www.gta5-mods.com/maps/mlo-limeys-juice-bar-fivem-add-on-sp)
 
 
-## Dependencies :
+## Dependencies:
 
-QBCore Framework - https://github.com/qbcore-framework/qb-core
+ESX Legacy
 
 PolyZone - https://github.com/mkafrin/PolyZone
 
-qb-target - https://github.com/BerkieBb/qb-target
+ox-target - https://github.com/overextended/ox-target
 
-qb-input - https://github.com/qbcore-framework/qb-input
+ox-lib - https://github.com/overextended/ox-lib
 
-qb-menu - https://github.com/qbcore-framework/qb-menu
-
-qb-policejob - https://github.com/qbcore-framework/qb-policejob
-> IF YOU USE A DIFFERENT POLICE ALERT SYSTEM PLEASE LET ME KNOW SO THAT I COULD CHANGE IT! [Support](https://discord.gg/PkJGQ6EdZp)
-
-## Add to qb-smallresources/server/consumeables.lua. 
-```
---drinks
-QBCore.Functions.CreateUseableItem("cherrycocktail", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:DrinkAlcohol", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("applecocktail", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:DrinkAlcohol", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("bananacocktail", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:DrinkAlcohol", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("cherrydrink", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Drink", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("kiwicocktail", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:DrinkAlcohol", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("lemondrink", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Drink", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("limedrink", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Drink", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("orangedrink", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Drink", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("paradisecocktail", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:DrinkAlcohol", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("watermelondrink", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Drink", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("limeysgum", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("limeyschocolate", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("limeyschocolate2", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("limeysdonut", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", src, item.name)
-    end
-end)
-QBCore.Functions.CreateUseableItem("limeysdonut2", function(source, item)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", src, item.name)
-    end
-end)
-```
-
-
-
-## Add to qb-smallresources/config.lua
-```
-Consumeables = {
-
---donuts
-	["limeysdonut"] = math.random(10, 25)
-    ["limeysdonut2"] = math.random(10, 25)
---candies
-	["limeysgum"] = math.random(10, 25)
-    ["limeyschocolate"] = math.random(10, 25)
-    ["limeyschocolate2"] = math.random(10, 25)
-
---drink
-    ["cherrydrink"] = math.random(55, 80),
-    ["lemondrink"] = math.random(55, 80),
-    ["limedrink"] = math.random(55, 80),
-    ["orangedrink"] = math.random(55, 80),
-    ["watermelondrink"] = math.random(55, 80),
-
-
---alcohol
-    ["paradisecocktail"] = math.random(75, 100),
-    ["cherrycocktail"] = math.random(50, 75),
-    ["applecocktail"] = math.random(50, 75),
-    ["bananacocktail"] = math.random(50, 75),
-    ["kiwicocktail"] = math.random(50, 75),    
-
-```
-
-## Insert into @qb-core/shared/items.lua 
-
-```
-QBShared.Items = {
---qb-limeysjob
+## Insert into ox-inventory/data/items.lua 
 	
 	--drinks
     ['limeysdonut'] 				 	 = {['name'] = 'limeysdonut', 			  	  	['label'] = 'Strawberry Donut', 				['weight'] = 200, 		['type'] = 'item', 		['image'] = 'limeysdonut2.png', 			['unique'] = false, 	['useable'] = true, 	['shouldClose'] = true,	   ['combinable'] = nil,   ['description'] = 'Strawberry Donut!'},
@@ -201,34 +48,14 @@ QBShared.Items = {
 
 ```
 
-## Insert Contents of @limeysjob/Images into @qb-inventory/HTML/Images
+## Insert Contents of @limeysjob/Images into @ox-inventory/web/images
 
+## Job Database
+TODO: Write a SQL file for import
 
-## Insert into @qb-core/shared/jobs.lua 
-```
-QBShared.Jobs = {
-    ["limeys"] = {
-		label = "Limey\'s Juice Shop",
-		defaultDuty = true,
-		grades = {
-            ['0'] = {
-                name = "Trainee",
-                payment = 75 --edit depending on your economy
-            },
-			['1'] = {
-                name = "Worker",
-                payment = 100 --edit depending on your economy
-            },
-            ['3'] = {
-                name = "manager",
-                payment = 150 --edit depending on your economy
-            },
-			['4'] = {
-                name = "Owner",
-                isboss = true,
-                payment = 200 --edit depending on your economy
-            },
-        },
-	},
-}		
-```
+For now, add an entry to the jobs table with the values ('limeys', 'Limey\'s Juice Bar', 0) and four entries into job_grades:
+(<id>, 'limeys', 0, 'trainee', 'Trainee', 150, '{}', '{}'),
+(<id>, 'limeys', 1, 'worker', 'Worker', 300, '{}', '{}'),
+(<id>, 'limeys', 2, 'manager', 'Manager', 500, '{}', '{}'),
+(<id>, 'limeys', 3, 'owner', 'Owner', 800, '{}', '{}')
+
