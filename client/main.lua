@@ -1,7 +1,16 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+local ESX = exports['es_extended']:getSharedObject()
 isLoggedIn = false
 local onDuty = true
 PlayerJob = {}
+
+local function SendNotify(msg,type,time,title)
+    if not title then title = "Limeys" end
+    if not time then time = 5000 end
+    if not type then type = 'success' end
+    if not msg then print("Notification Sent With No Message.") return end
+    lib.notify({ title = title, description = msg, type = type, duration = time})
+end
+
 
 function DrawText3Ds(x, y, z, text)
 	SetTextScale(0.35, 0.35)
@@ -30,34 +39,16 @@ Citizen.CreateThread(function()
     EndTextCommandSetBlipName(Limeys)
 end) 
 
-
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
-AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-    QBCore.Functions.GetPlayerData(function(PlayerData)
-        PlayerJob = PlayerData.job
-        if PlayerData.job.onduty then
-            if PlayerData.job.name == Config.JobName then
-                TriggerServerEvent("QBCore:ToggleDuty")
-            end
-        end
-    end)
+RegisterNetEvent('esx:playerLoaded')
+AddEventHandler('esx:playerLoaded', function(xPlayer)
+   PlayerJob = xPlayer.job
 end)
 
-RegisterNetEvent('QBCore:Client:OnJobUpdate')
-AddEventHandler('QBCore:Client:OnJobUpdate', function(JobInfo)
-    PlayerJob = JobInfo
-    onDuty = PlayerJob.onduty
+RegisterNetEvent('esx:setJob')
+AddEventHandler('esx:setJob', function(job)
+   PlayerJob = job
 end)
 
-RegisterNetEvent('QBCore:Client:SetDuty')
-AddEventHandler('QBCore:Client:SetDuty', function(duty)
-	onDuty = duty
-end)
-
-RegisterNetEvent("qb-limeysjob:DutyB")
-AddEventHandler("qb-limeysjob:DutyB", function()
-    TriggerServerEvent("QBCore:ToggleDuty")
-end)
 
 -----Restaurant Stuff
 
@@ -115,349 +106,154 @@ AddEventHandler("qb-limeysjob:Fridge", function()
     })
 end)
 
+function LockInventory(toggle) -- big up to jim for how to do this
+	if toggle then
+        LocalPlayer.state:set("inv_busy", true, true) -- used by qb, ps and ox
+    else 
+        LocalPlayer.state:set("inv_busy", false, true) -- used by qb, ps and ox
+	end
+end
+
+function prepareCocktail(name)
+	local success = lib.skillCheck({'easy', 'easy', 'easy', 'easy', 'easy'}, {'e'})
+	if success then
+		busy = true
+		LockInventory(true)
+		FreezeEntityPosition(PlayerPedId(), true)
+		if lib.progressCircle({ duration = 4000, label = 'Preparing '..name..' Cocktail', position = 'bottom', useWhileDead = false, canCancel = true, disable = { car = true, }, anim = { dict = "mp_common", clip = "givetake1_a", flag = 8}}) then
+			busy = false
+			LockInventory(false)
+			ClearPedTasks(PlayerPedId())
+			TriggerServerEvent('qb-limeysjob:server:'..name..'Cocktail')
+			SendNotify("Cocktail prepared!", 'success', 2000)
+			FreezeEntityPosition(PlayerPedId(), false)
+		else 
+			busy = false
+			LockInventory(false)
+			ClearPedTasks(PlayerPedId())
+			SendNotify('Action cancelled.', 'error', 2000)
+			FreezeEntityPosition(PlayerPedId(), false)
+		end
+	else
+		SendNotify("Action failed.", 'error', 2000)
+	end
+end
+
+function PrepareDrink(name)
+	local success = lib.skillCheck({'easy', 'easy', 'easy', 'easy', 'easy'}, {'e'})
+	if success then
+		busy = true
+		LockInventory(true)
+		FreezeEntityPosition(PlayerPedId(), true)
+		if lib.progressCircle({ duration = 4000, label = 'Preparing '..name..' Drink', position = 'bottom', useWhileDead = false, canCancel = true, disable = { car = true, }, anim = { dict = "mp_common", clip = "givetake1_a", flag = 8}}) then
+			busy = false
+			LockInventory(false)
+			ClearPedTasks(PlayerPedId())
+			TriggerServerEvent('qb-limeysjob:server:'..name..'Drink')
+			SendNotify("Cocktail prepared!", 'success', 2000)
+			FreezeEntityPosition(PlayerPedId(), false)
+		else 
+			busy = false
+			LockInventory(false)
+			ClearPedTasks(PlayerPedId())
+			SendNotify('Action cancelled.', 'error', 2000)
+			FreezeEntityPosition(PlayerPedId(), false)
+		end
+	else
+		SendNotify("Action failed.", 'error', 2000)
+	end
+end
+
+
 
 ---drinks menu--------------------
 RegisterNetEvent("qb-limeysjob:CherryCocktail")
 AddEventHandler("qb-limeysjob:CherryCocktail", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientcherrycocktail', function(HasItems)  
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientcherrycocktail', function(HasItems)  
     		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making a Cherry Cocktail..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:CherryCocktail')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cocktailglass"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cherry"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["whiskey"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cherrycocktail"], "add")
-                    			QBCore.Functions.Notify("You made a Cherry Cocktail", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
+				prepareCocktail('Cherry')
 			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+	end)
 end)
 RegisterNetEvent("qb-limeysjob:AppleCocktail")
 AddEventHandler("qb-limeysjob:AppleCocktail", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientapplecocktail', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making an Apple Cocktail..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:AppleCocktail')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cocktailglass"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["apple"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["whiskey"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["applecocktail"], "add")
-                    			QBCore.Functions.Notify("You made an Apple Cocktail", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientapplecocktail', function(HasItems)  
+		if HasItems then
+			prepareCocktail('Apple')
+		end	
+	end)
 end)
 RegisterNetEvent("qb-limeysjob:BananaCocktail")
 AddEventHandler("qb-limeysjob:BananaCocktail", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientbananacocktail', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making a Banana Cocktail..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:BananaCocktail')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cocktailglass"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["whiskey"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["banana"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["bananacocktail"], "add")
-                    			QBCore.Functions.Notify("You made a Banana Cocktail", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientbananacocktail', function(HasItems)  
+		if HasItems then
+			prepareCocktail('Banana')
+		end
+	end)
 end)
 RegisterNetEvent("qb-limeysjob:KiwiCocktail")
 AddEventHandler("qb-limeysjob:KiwiCocktail", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientkiwicocktail', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making a Kiwi Cocktail..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:KiwiCocktail')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cocktailglass"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["kiwi"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["whiskey"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["kiwicocktail"], "add")
-                    			QBCore.Functions.Notify("You made a Kiwi Cocktail", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientkiwicocktail', function(HasItems)  
+		if HasItems then
+			prepareCocktail('Kiwi')
+		end
+	end)
 end)
 RegisterNetEvent("qb-limeysjob:ParadiseCocktail")
 AddEventHandler("qb-limeysjob:ParadiseCocktail", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientparadisecocktail', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making a Paradise Cocktail..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:ParadiseCocktail')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cocktailglass"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["apple"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cherry"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["kiwi"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["banana"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["watermelon"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["orange"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["lemon"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["lime"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["whiskey"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["paradisecocktail"], "add")
-                    			QBCore.Functions.Notify("You made a Paradise Cocktail", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientparadisecocktail', function(HasItems)  
+		if HasItems then
+			prepareCocktail('Paradise')
+		end
+	end)
 end)
+
+
 RegisterNetEvent("qb-limeysjob:CherryDrink")
 AddEventHandler("qb-limeysjob:CherryDrink", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientcherrydrink', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making a Cherry Drink..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:CherryDrink')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["drink-glass"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cherry"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cherrydrink"], "add")
-                    			QBCore.Functions.Notify("You made a Cherry Drink", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientcherrydrink', function(HasItems)  
+		if HasItems then
+			prepareDrink('Cherry')
+		end
+	end)
 end)
 RegisterNetEvent("qb-limeysjob:LemonDrink")
 AddEventHandler("qb-limeysjob:LemonDrink", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientlemondrink', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making Rip-off Lemonade..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:LemonDrink')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["drink-glass"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["lemon"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["lemondrink"], "add")
-                    			QBCore.Functions.Notify("You made Rip-off Lemonade", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientlemondrink', function(HasItems)  
+		if HasItems then
+			prepareDrink('Lemon')
+		end
+	end)
 end)
 RegisterNetEvent("qb-limeysjob:LimeDrink")
 AddEventHandler("qb-limeysjob:LimeDrink", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientlimedrink', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making a Lime Drink..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:LimeDrink')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["drink-glass"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["lime"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["limedrink"], "add")
-                    			QBCore.Functions.Notify("You made a Lime Drink", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientlimedrink', function(HasItems)  
+		if HasItems then
+			prepareDrink('Lime')
+		end
+	end)
 end)
 RegisterNetEvent("qb-limeysjob:OrangeDrink")
 AddEventHandler("qb-limeysjob:OrangeDrink", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientorangedrink', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making a Orange Drink..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:OrangeDrink')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["drink-glass"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["orange"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["orangedrink"], "add")
-                    			QBCore.Functions.Notify("You made a Orange Drink", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientorangedrink', function(HasItems)  
+		if HasItems then
+			prepareDrink('Orange')
+		end
+	end)
 end)
 RegisterNetEvent("qb-limeysjob:WatermelonDrink")
 AddEventHandler("qb-limeysjob:WatermelonDrink", function()
-    if onDuty then
-    	QBCore.Functions.TriggerCallback('qb-limeysjob:server:get:ingredientwatermelondrink', function(HasItems)  
-    		if HasItems then
-				QBCore.Functions.Progressbar("pickup_sla", "Making a Watermelon Drink..", 4000, false, true, {
-					disableMovement = true,
-					disableCarMovement = true,
-					disableMouse = false,
-					disableCombat = true,
-				}, {
-					animDict = "mp_common",
-					anim = "givetake1_a",
-					flags = 8,
-				}, {}, {}, function() -- Done
-					TriggerServerEvent('qb-limeysjob:server:WatermelonDrink')
-                    			TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["drink-glass"], "remove")
-                                	TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["watermelonslice"], "remove")
-					TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["watermelondrink"], "add")
-                    			QBCore.Functions.Notify("You made a Watermelon Drink", "success")
-				end, function()
-					QBCore.Functions.Notify("Cancelled..", "error")
-				end)
-			else
-   				QBCore.Functions.Notify("You dont have the right stuff to make this", "error")
-			end
-		end)
-	else 
-		QBCore.Functions.Notify("You must be Clocked into work", "error")
-	end
+    ESX.TriggerServerCallback('qb-limeysjob:server:get:ingredientwatermelondrink', function(HasItems)  
+		if HasItems then
+			prepareDrink('Watermelon')
+		end
+	end)
 end)
 
 
-
-
-
-
-
 RegisterNetEvent('qb-limeysjob:WatermelonSlice', function()
-    QBCore.Functions.Progressbar('watermelonslice', 'Slicing Watermelon...', false, true, {
-        disableMovement = true,
-	disableCarMovement = true,
-	disableMouse = false,
-	disableCombat = true,
-    }, {
-	animDict = 'anim@gangops@facility@servers@',
-	anim = 'idle',
-	flags = 16,
-    })
-    QBCore.Functions.Notify('You sliced the watermelon', 'success')
+	lib.progressCircle({ duration = 4000, label = 'Preparing '..name..' Drink', position = 'bottom', useWhileDead = false, canCancel = true, disable = { car = true, }, anim = { dict = "anim@gangops@facility@servers@", clip = "idle", flag = 16}})
+	SendNotify('You sliced the watermelon', 'success', 2000)
     ClearPedTasks(PlayerPedId())
 end)
 
